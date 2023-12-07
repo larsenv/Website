@@ -34,13 +34,13 @@ def application_badges(package):
 
             # determine st/nd/rd/th
             if age % 10 == 1 and age % 100 != 11:
-                age = str(age) + "st"
+                age = f"{age}st"
             elif age % 10 == 2 and age % 100 != 12:
-                age = str(age) + "nd"
+                age = f"{str(age)}nd"
             elif age % 10 == 3 and age % 100 != 13:
-                age = str(age) + "rd"
+                age = f"{str(age)}rd"
             else:
-                age = str(age) + "th"
+                age = f"{str(age)}th"
             badges["birthday-app"] = f"Happy {age} Birthday, {package['name']}!"
 
     return badges
