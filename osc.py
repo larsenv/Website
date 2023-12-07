@@ -14,12 +14,13 @@ def build_dictionary_filter_from_kwargs(**filter_kwargs):
 
 
 def filter_packages(packages, **filter_kwargs):
-    new_packages = []
     filters = build_dictionary_filter_from_kwargs(**filter_kwargs)
-    for package in packages:
-        if len(filters) == 0 or reduce(operator.and_, [filter_(package) for filter_ in filters]):
-            new_packages.append(package)
-    return new_packages
+    return [
+        package
+        for package in packages
+        if len(filters) == 0
+        or reduce(operator.and_, [filter_(package) for filter_ in filters])
+    ]
 
 
 class API:
@@ -39,7 +40,9 @@ class API:
         scheduler.start()
 
     def load_packages(self):
-        self.packages = json.loads(requests.get(f"https://hbb1.oscwii.org/api/v3/contents").text)
+        self.packages = json.loads(
+            requests.get("https://hbb1.oscwii.org/api/v3/contents").text
+        )
 
         # add formatted release date
         for package in self.packages:
@@ -53,14 +56,17 @@ class API:
         self.packages.sort(key=lambda x: x["name"])
 
     def get_packages(self, developer=None, category=None):
-        filtered = filter_packages(self.packages, coder=developer, category=category)
-        return filtered
+        return filter_packages(self.packages, coder=developer, category=category)
 
     def package_by_name(self, name):
-        for package in self.packages:
-            if package["slug"].lower() == name.lower():
-                return package
-        return None
+        return next(
+            (
+                package
+                for package in self.packages
+                if package["slug"].lower() == name.lower()
+            ),
+            None,
+        )
 
     def newest_apps(self):
         newest_apps = {"newest": None,
@@ -69,7 +75,7 @@ class API:
                        "emulators": None,
                        "games": None,
                        "media": None}
-        for key, value in newest_apps.items():
+        for key in newest_apps:
             date = 0
             for package in self.packages:
                 if (package["category"] == key) or (key == "newest"):

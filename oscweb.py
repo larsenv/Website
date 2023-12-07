@@ -108,7 +108,7 @@ def faq():
 @app.route("/help/<article>")
 def help(article="welcome"):
     # check if article exists
-    if article + ".html" not in os.listdir("templates/pages/help/articles"):
+    if f"{article}.html" not in os.listdir("templates/pages/help/articles"):
         abort(404)
     return render_template(f'pages/help/articles/{article}.html', name=article)
 
@@ -200,7 +200,7 @@ def modify_query(**new_values):
     for key, value in new_values.items():
         args[key] = value
 
-    return '{}?{}'.format(request.path, url_encode(args))
+    return f'{request.path}?{url_encode(args)}'
 
 
 @app.errorhandler(404)
